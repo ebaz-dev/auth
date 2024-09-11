@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import { validateRequest, BadRequestError } from "@v-ing/common";
 import { User } from "../shared/models/user";
-import { Password } from "../services/password";
+import { Password } from "../shared/utils/password";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
 

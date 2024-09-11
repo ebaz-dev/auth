@@ -5,16 +5,19 @@ import { currentUserRouter } from "./routes/current-user";
 import { signInRouter } from "./routes/signIn";
 import { signUpRouter } from "./routes/signUp";
 import { signOutRouter } from "./routes/signOut";
-import { errorHandler, NotFoundError } from "@v-ing/common";
+import { errorHandler, NotFoundError } from "@ebazdev/core";
 import cookieSession from "cookie-session";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 app.set("trust proxy", true);
 app.use(json());
 app.use(
   cookieSession({
-    signed: process.env.NODE_ENV !== "test",
+    signed: true,
     secure: process.env.NODE_ENV !== "test",
+    keys: [process.env.JWT_KEY!],
   })
 );
 

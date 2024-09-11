@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { currentUser } from "@v-ing/common";
+import { currentUser } from "@ebazdev/core";
 
 const router = express.Router();
 

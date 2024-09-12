@@ -10,6 +10,8 @@ import cookieSession from "cookie-session";
 import * as dotenv from "dotenv";
 dotenv.config();
 
+const apiPrefix = "/api/v1/users";
+
 const app = express();
 app.set("trust proxy", true);
 app.use(json());
@@ -21,10 +23,10 @@ app.use(
   })
 );
 
-app.use(currentUserRouter);
-app.use(signInRouter);
-app.use(signUpRouter);
-app.use(signOutRouter);
+app.use(apiPrefix, currentUserRouter);
+app.use(apiPrefix, signInRouter);
+app.use(apiPrefix, signUpRouter);
+app.use(apiPrefix, signOutRouter);
 
 app.all("*", async () => {
   throw new NotFoundError();

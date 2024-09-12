@@ -5,6 +5,7 @@ import { app } from "../app";
 
 declare global {
   var signin: () => Promise<string[]>;
+  var apiPrefix: string;
 }
 
 let mongo: any;
@@ -42,7 +43,7 @@ global.signin = async () => {
   const password = "password";
 
   const response = await request(app)
-    .post("/api/users/signup")
+    .post(`${global.apiPrefix}/signup`)
     .send({
       email,
       password,
@@ -53,3 +54,5 @@ global.signin = async () => {
 
   return cookie ?? [];
 };
+
+global.apiPrefix = "/api/v1/users";

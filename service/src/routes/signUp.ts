@@ -4,6 +4,8 @@ import { validateRequest, BadRequestError } from "@ebazdev/core";
 import { User } from "../shared/models/user";
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
+import { UserCreatedCreatedPublisher } from "../events/publisher/user-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -25,6 +27,11 @@ router.post(
 
     const user = User.build({ email, password });
     await user.save();
+
+    await new UserCreatedCreatedPublisher(natsWrapper.client).publish({
+      id: user.id,
+      email: user.email,
+    });
 
     const userJwt = jwt.sign(
       { id: user.id, email: user.email },

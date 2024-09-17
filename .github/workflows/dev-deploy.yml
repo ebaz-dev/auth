@@ -73,6 +73,8 @@ jobs:
               echo "Service is not running. Starting..."
               pm2 start ecosystem.config.js --env development || { echo "PM2 start failed"; pm2 logs; exit 1; }
             fi
+            
+            echo "Deployment completed."
           EOF
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_DEV }}

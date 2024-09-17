@@ -21,13 +21,6 @@ jobs:
       - name: Install PM2 globally
         run: npm install pm2 -g
 
-      - name: Configure SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/ezdev
-          chmod 600 ~/.ssh/ezdev
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-
       - name: Install dependencies
         run: npm ci
         working-directory: ./service

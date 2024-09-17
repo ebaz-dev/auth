@@ -4,7 +4,7 @@ import { User } from "../shared";
 
 const router = express.Router();
 
-router.get("/currentuser", currentUser, async (req: Request, res: Response) => {
+router.get("/currentuser", async (req: Request, res: Response) => {
   const user = await User.findById(req.currentUser?.id);
 
   res.send({ currentUser: req.currentUser || null });

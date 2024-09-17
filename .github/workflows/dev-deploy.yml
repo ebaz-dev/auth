@@ -24,8 +24,8 @@ jobs:
       - name: Configure SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/ezdev
+          chmod 600 ~/.ssh/ezdev
           ssh-keyscan github.com >> ~/.ssh/known_hosts
 
       - name: Install dependencies

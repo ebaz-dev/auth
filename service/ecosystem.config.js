@@ -7,17 +7,11 @@ module.exports = {
       script: "./build/index.js",
       instances: 1,
       exec_mode: "cluster",
-      env: {
-        NODE_ENV: "local",
-        PORT: PORTS.DEV.Auth,
-        NATS_CLIENT_ID: process.env.PM2_INSTANCE_ID ? `auth-service-${process.env.PM2_INSTANCE_ID}` : 'auth-service',
-        ...ENVS.DEV
-      },
       env_development: {
         NODE_ENV: "development",
         PORT: PORTS.DEV.Auth,
         NATS_CLIENT_ID: process.env.PM2_INSTANCE_ID ? `auth-service-${process.env.PM2_INSTANCE_ID}` : 'auth-service',
-        ...ENVS.DEV
+        // ...ENVS.DEV
       },
       env_stag: {
         NODE_ENV: "stag",

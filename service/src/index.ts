@@ -31,11 +31,17 @@ const start = async () => {
     throw new Error("NATS_CLUSTER_ID must be defined");
   }
 
-  await natsWrapper.connect(
-    process.env.NATS_CLUSTER_ID,
-    process.env.NATS_CLIENT_ID,
-    process.env.NATS_URL
-  );
+  try {
+    await natsWrapper.connect(
+      process.env.NATS_CLUSTER_ID,
+      process.env.NATS_CLIENT_ID,
+      process.env.NATS_URL
+    );
+  } catch (error) {
+    console.error("Failed to connect to NATS:", error);
+    process.exit(1);
+  }
+
   natsWrapper.client.on("close", () => {
     console.log("NATS connection closed!");
     process.exit();

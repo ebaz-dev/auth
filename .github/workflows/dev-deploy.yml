@@ -43,11 +43,22 @@ jobs:
       - name: Deploy and Reload PM2
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER_DEV }}@${{ secrets.SSH_HOST_DEV }} << 'EOF'
-            cd /home/ebazaar/github/${{ github.repository }}/service
+            REPO_DIR="/home/ebazaar/github/${{ github.repository }}"
+            SERVICE_DIR="/home/ebazaar/github/${{ github.repository }}/service"
+            if [ ! -d "$REPO_DIR" ]; then
+              echo "Repository not found. Cloning..."
+              git clone git@github.com:${{ github.repository }} $REPO_DIR
+            else
+              echo "Repository found. Pulling latest changes..."
+              cd $REPO_DIR
+              git pull
+            fi
+            cd $REPO_DIR
             git pull
+            cd $SERVICE_DIR
             npm install
             npm run build
-            if pm2 list | grep -q '${{ github.repository }}'; then
+            if pm2 list | grep -q 'auth'; then
               echo "Service is running. Reloading..."
               pm2 reload ecosystem.config.js --env development
             else

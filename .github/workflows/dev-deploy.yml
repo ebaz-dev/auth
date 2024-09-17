@@ -40,9 +40,16 @@ jobs:
         run: npm run build
         working-directory: ./service
 
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY_DEV }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST_DEV }} >> ~/.ssh/known_hosts
+
       - name: Deploy and Reload PM2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_DEV }} ${{ secrets.SSH_USER_DEV }}@${{ secrets.SSH_HOST_DEV }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SSH_USER_DEV }}@${{ secrets.SSH_HOST_DEV }} << 'EOF'
             REPO_DIR="/home/ebazaar/github/${{ github.repository }}"
             SERVICE_DIR="/home/ebazaar/github/${{ github.repository }}/service"
             if [ ! -d "$REPO_DIR" ]; then

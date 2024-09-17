@@ -30,7 +30,8 @@ jobs:
         working-directory: ./service
 
       - name: Run Jest tests
-        run: npm test
+        run: |
+          npm test -- --ci || exit 1
         working-directory: ./service
 
       - name: Build the project

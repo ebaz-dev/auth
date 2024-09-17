@@ -22,7 +22,7 @@ jobs:
         run: npm install pm2 -g
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: ./service
 
       - name: Run TypeScript checks
@@ -32,6 +32,9 @@ jobs:
       - name: Run Jest tests
         run: npm run test:ci
         working-directory: ./service
+        env:
+          NODE_ENV: test
+          JWT_KEY: qemqekqenjkqneqhje
 
       - name: Build the project
         run: npm run build

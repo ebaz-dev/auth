@@ -1,0 +1,52 @@
+name: Deploy Auth Service - Dev
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install PM2 globally
+        run: npm install pm2 -g
+
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Run TypeScript checks
+        run: npm run lint
+
+      - name: Run Jest tests
+        run: npm test
+      
+      - name: Build the project
+        run: npm run build
+
+      - name: Deploy and Reload PM2
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER_DEV }}@${{ secrets.SSH_HOST_DEV }} << 'EOF'
+            cd /home/ebazaar/github/${{ github.repository }}/service
+            git pull
+            npm install
+            npm run build
+            if pm2 list | grep -q '${{ github.repository }}'; then
+              echo "Service is running. Reloading..."
+              pm2 reload ecosystem.config.js --env development
+            else
+              echo "Service is not running. Starting..."
+              pm2 start ecosystem.config.js --env development
+            fi
+          EOF
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_DEV }}

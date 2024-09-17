@@ -50,6 +50,7 @@ jobs:
       - name: Deploy and Reload PM2
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SSH_USER_DEV }}@${{ secrets.SSH_HOST_DEV }} << 'EOF'
+            set -e
             REPO_DIR="/home/ebazaar/github/${{ github.repository }}"
             SERVICE_DIR="/home/ebazaar/github/${{ github.repository }}/service"
             if [ ! -d "$REPO_DIR" ]; then

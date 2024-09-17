@@ -5,6 +5,7 @@
   "scripts": {
     "start": "ts-node-dev --poll src/index.ts",
     "test": "jest --watchAll --no-cache",
+    "test:ci": "jest --ci",
     "clean-common": "cd ./../common && npm run clean-src && cd ../service",
     "pub": "npm run clean-common && cp -rf src/shared/* ../common/src && cd ../common && npm run pub",
     "lint": "tsc --noEmit",

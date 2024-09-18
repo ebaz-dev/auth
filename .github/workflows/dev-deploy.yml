@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "20"
 
@@ -73,8 +73,16 @@ jobs:
               echo "Service is not running. Starting..."
               pm2 start ecosystem.config.js --env development || { echo "PM2 start failed"; pm2 logs; exit 1; }
             fi
-            
+
             echo "Deployment completed."
+          EOF
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_DEV }}
+
+      - name: Deploy and Reload PM2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SSH_USER_DEV }}@${{ secrets.SSH_HOST_DEV }} << 'EOF'
+            pm2 status || { echo 'PM2 status check failed'; exit 1; }
           EOF
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_DEV }}

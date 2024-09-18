@@ -6,7 +6,6 @@ module.exports = {
       name: "auth",
       script: "./build/index.js",
       instances: 1,
-      watch: true,
       exec_mode: "cluster",
       env_development: {
         NODE_ENV: "development",

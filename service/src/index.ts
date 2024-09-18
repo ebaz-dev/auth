@@ -34,7 +34,7 @@ const start = async () => {
   await natsWrapper.connect(
     process.env.NATS_CLUSTER_ID,
     process.env.NATS_CLIENT_ID,
-    process.env.NATS_URL
+    process.env.NATS_URLS!
   );
 
   natsWrapper.client.on("close", () => {

@@ -78,11 +78,3 @@ jobs:
           EOF
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_DEV }}
-
-      - name: Deploy and Reload PM2
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SSH_USER_DEV }}@${{ secrets.SSH_HOST_DEV }} << 'EOF'
-            pm2 status || { echo 'PM2 status check failed'; exit 1; }
-          EOF
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_DEV }}

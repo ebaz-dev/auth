@@ -34,7 +34,7 @@ const start = async () => {
   await natsWrapper.connect(
     process.env.NATS_CLUSTER_ID,
     process.env.NATS_CLIENT_ID,
-    process.env.NATS_URLS!
+    process.env.NATS_URL
   );
 
   natsWrapper.client.on("close", () => {
@@ -53,3 +53,8 @@ const start = async () => {
 };
 
 start();
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
+});

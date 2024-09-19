@@ -1,30 +1,23 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 import { Password } from "../utils/password";
 
-interface UserAttrs {
-  email: string;
+export interface UserDoc extends Document {
+  email?: string;
+  phoneNumber?: string;
   password: string;
+  isEmailConfirmed: boolean;
+  isPhoneConfirmed: boolean;
+  confirmationCode: string;
 }
 
-interface UserModel extends mongoose.Model<UserDoc> {
-  build(attrs: UserAttrs): UserDoc;
-}
-
-interface UserDoc extends mongoose.Document {
-  email: string;
-  password: string;
-}
-
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema<UserDoc>(
   {
-    email: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
+    email: { type: String, unique: true, sparse: true },
+    phoneNumber: { type: String, unique: true, sparse: true },
+    password: { type: String, required: true },
+    isEmailConfirmed: { type: Boolean, default: false },
+    isPhoneConfirmed: { type: Boolean, default: false },
+    confirmationCode: { type: String },
   },
   {
     toJSON: {
@@ -46,10 +39,6 @@ userSchema.pre("save", async function (done) {
   done();
 });
 
-userSchema.statics.build = (attrs: UserAttrs) => {
-  return new User(attrs);
-};
-
-const User = mongoose.model<UserDoc, UserModel>("User", userSchema);
+const User = mongoose.model<UserDoc>("User", userSchema);
 
 export { User };

@@ -4,6 +4,8 @@ export interface UserCreatedEvent {
   subject: AuthEventSubjects.UserCreated;
   data: {
     id: string;
-    email: string;
+    email: string | undefined;
+    phoneNumber: string | undefined;
+    confirmationCode: string;
   };
 }

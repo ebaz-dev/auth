@@ -85,7 +85,7 @@ it("sets set confirmation code and expire time after signup", async () => {
       password: "password",
     })
     .expect(201);
-  console.log(response.body);
+
   expect(response.body.confirmationCode).toBeDefined();
   expect(response.body.confirmationCodeExpiresAt).toBeDefined();
 });

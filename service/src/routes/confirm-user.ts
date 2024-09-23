@@ -9,6 +9,7 @@ import {
 } from "@ebazdev/core";
 import { StatusCodes } from "http-status-codes";
 import { body } from "express-validator";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -70,7 +71,9 @@ router.post(
     user.confirmationCodeExpiresAt = undefined;
     await user.save();
 
-    res.status(StatusCodes.OK).send(user.toJSON());
+    const identifier = email || phoneNumber;
+
+    res.status(StatusCodes.OK).send();
   }
 );
 

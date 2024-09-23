@@ -44,6 +44,8 @@ afterAll(async () => {
 global.signin = async () => {
   const email = "test@test.com";
   const password = "password";
+  const deviceType = "web";
+  const deviceName = "jest test";
 
   const response = await request(app)
     .post(`${global.apiPrefix}/signup`)
@@ -53,7 +55,25 @@ global.signin = async () => {
     })
     .expect(201);
 
-  const cookie = response.get("Set-Cookie");
+  await request(app)
+    .post(`${global.apiPrefix}/confirm-user`)
+    .send({
+      email: email,
+      confirmationCode: response.body.confirmationCode,
+    })
+    .expect(200);
+
+  const signedUser = await request(app)
+    .post(`${global.apiPrefix}/signIn`)
+    .send({
+      email,
+      password,
+      deviceType,
+      deviceName,
+    })
+    .expect(200);
+
+  const cookie = signedUser.get("Set-Cookie");
 
   return cookie ?? [];
 };

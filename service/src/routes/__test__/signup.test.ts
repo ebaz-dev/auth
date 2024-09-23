@@ -49,24 +49,35 @@ it("returns a 400 with missing email and password", async () => {
 });
 
 it("disallows duplicate emails", async () => {
-  await request(app)
+  const email = "test@test.com";
+  const password = "password";
+
+  const registeredUser = await request(app)
     .post(`${global.apiPrefix}/signup`)
     .send({
-      email: "test@test.com",
-      password: "password",
+      email,
+      password,
     })
     .expect(201);
 
   await request(app)
+    .post(`${global.apiPrefix}/confirm-user`)
+    .send({
+      email,
+      confirmationCode: registeredUser.body.confirmationCode,
+    })
+    .expect(200);
+
+  await request(app)
     .post(`${global.apiPrefix}/signup`)
     .send({
-      email: "test@test.com",
-      password: "password",
+      email,
+      password,
     })
     .expect(400);
 });
 
-it("sets a cookie after successful signup", async () => {
+it("sets set confirmation code and expire time after signup", async () => {
   const response = await request(app)
     .post(`${global.apiPrefix}/signup`)
     .send({
@@ -74,8 +85,9 @@ it("sets a cookie after successful signup", async () => {
       password: "password",
     })
     .expect(201);
-
-  expect(response.get("Set-Cookie")).toBeDefined();
+  console.log(response.body);
+  expect(response.body.confirmationCode).toBeDefined();
+  expect(response.body.confirmationCodeExpiresAt).toBeDefined();
 });
 
 it("how to be call publish after an successful signup", async () => {

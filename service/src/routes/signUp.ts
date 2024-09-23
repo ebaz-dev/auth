@@ -87,7 +87,9 @@ router.post(
       confirmationExpireAt: user.confirmationCodeExpiresAt.toISOString(),
     });
 
-    res.status(StatusCodes.CREATED).send();
+    res
+      .status(StatusCodes.CREATED)
+      .send(process.env.NODE_ENV === "test" ? user : null);
   }
 );
 

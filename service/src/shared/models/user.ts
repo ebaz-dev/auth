@@ -7,7 +7,8 @@ export interface UserDoc extends Document {
   password: string;
   isEmailConfirmed: boolean;
   isPhoneConfirmed: boolean;
-  confirmationCode: string;
+  confirmationCode: string | undefined;
+  confirmationCodeExpiresAt: Date | undefined;
 }
 
 const userSchema = new Schema<UserDoc>(
@@ -18,6 +19,7 @@ const userSchema = new Schema<UserDoc>(
     isEmailConfirmed: { type: Boolean, default: false },
     isPhoneConfirmed: { type: Boolean, default: false },
     confirmationCode: { type: String },
+    confirmationCodeExpiresAt: { type: Date },
   },
   {
     toJSON: {

@@ -5,6 +5,7 @@ import { currentUserRouter } from "./routes/current-user";
 import { signInRouter } from "./routes/signIn";
 import { signUpRouter } from "./routes/signUp";
 import { signOutRouter } from "./routes/signOut";
+import { confirmUser } from "./routes/confirm-user";
 import { currentUser, errorHandler, NotFoundError } from "@ebazdev/core";
 import cookieSession from "cookie-session";
 import * as dotenv from "dotenv";
@@ -28,6 +29,7 @@ app.use(apiPrefix, currentUserRouter);
 app.use(apiPrefix, signInRouter);
 app.use(apiPrefix, signUpRouter);
 app.use(apiPrefix, signOutRouter);
+app.use(apiPrefix, confirmUser);
 
 app.all("*", async () => {
   throw new NotFoundError();

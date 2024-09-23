@@ -5,14 +5,15 @@ import {
   BadRequestError,
   recognizePhoneNumber,
 } from "@ebazdev/core";
-import { User, UserDoc } from "../shared/models/user";
-import jwt from "jsonwebtoken";
+import { User } from "../shared/models/user";
 import { StatusCodes } from "http-status-codes";
 import { UserCreatedCreatedPublisher } from "../events/publisher/user-created-publisher";
 import { natsWrapper } from "../nats-wrapper";
 import { generateConfirmationCode } from "../shared/utils/generate-confirmation-code";
 
 const router = express.Router();
+
+const EXPIRATION_CONFIRMATION_SECONDS = 3 * 60;
 
 router.post(
   "/signUp",
@@ -43,22 +44,37 @@ router.post(
     let existingUser;
 
     if (email) {
-      existingUser = await User.findOne({ email });
+      existingUser = await User.findOne({ email, isEmailConfirmed: true });
     } else if (phoneNumber) {
-      existingUser = await User.findOne({ phoneNumber });
+      existingUser = await User.findOne({
+        phoneNumber,
+        isPhoneConfirmed: true,
+      });
     }
 
-    if (
-      existingUser &&
-      (existingUser.isEmailConfirmed || existingUser.isPhoneConfirmed)
-    ) {
+    if (existingUser) {
       throw new BadRequestError("User already exist");
     }
 
-    const confirmationCode = generateConfirmationCode();
+    const expiration = new Date();
+    expiration.setSeconds(
+      expiration.getSeconds() + EXPIRATION_CONFIRMATION_SECONDS
+    );
+
+    // Find unconfirmed user if try to register before
+    existingUser = await User.findOne({ email, phoneNumber });
+
     const user = existingUser ? existingUser : new User({ email, phoneNumber });
+
+    // const isExpired = IsExpired(user.confirmationCodeExpiresAt)
+    // if(user.confirmationCodeExpiresAt && isExpired.expired){
+    //     return new BadRequestError('Its not expired')
+    // }
+
+    const confirmationCode = generateConfirmationCode();
     user.confirmationCode = confirmationCode;
     user.password = password;
+    user.confirmationCodeExpiresAt = expiration;
 
     await user.save();
 
@@ -68,6 +84,7 @@ router.post(
       email: user.email,
       phoneNumber: user.phoneNumber,
       confirmationCode,
+      confirmationExpireAt: user.confirmationCodeExpiresAt.toISOString(),
     });
 
     res.status(StatusCodes.CREATED).send();

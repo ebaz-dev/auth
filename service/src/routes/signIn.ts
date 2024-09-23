@@ -5,7 +5,7 @@ import {
   BadRequestError,
   recognizePhoneNumber,
 } from "@ebazdev/core";
-import { User } from "../shared";
+import { UserDevice, DeviceTypes, User } from "../shared";
 import { Password } from "../shared/utils/password";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
@@ -33,10 +33,34 @@ router.post(
         return true;
       })
       .withMessage("Either email or phone number is required"),
+    body("deviceToken")
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage("deviceToken must be valid"),
+    body("deviceType")
+      .custom((value) => {
+        if (!Object.values(DeviceTypes).includes(value)) {
+          return false;
+        }
+        return true;
+      })
+      .withMessage(`deviceType must be valid ${Object.values(DeviceTypes)}`),
+    body("deviceName")
+      .trim()
+      .notEmpty()
+      .withMessage("deviceType must be valid"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { email, phoneNumber, password } = req.body;
+    const {
+      email,
+      phoneNumber,
+      password,
+      deviceToken,
+      deviceType,
+      deviceName,
+    } = req.body;
 
     let existingUser;
 
@@ -62,10 +86,20 @@ router.post(
       throw new BadRequestError("Invalid credentials");
     }
 
+    const device = new UserDevice({
+      userId: existingUser.id,
+      deviceName,
+      deviceType,
+      deviceToken,
+      isLogged: true,
+    });
+
+    await device.save();
+
     const identifier = email || phoneNumber;
 
     const userJwt = jwt.sign(
-      { id: existingUser.id, identifier: identifier },
+      { id: existingUser.id, identifier: identifier, deviceId: device.id },
       process.env.JWT_KEY!
     );
 

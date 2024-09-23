@@ -7,5 +7,6 @@ export interface UserCreatedEvent {
     email: string | undefined;
     phoneNumber: string | undefined;
     confirmationCode: string;
+    confirmationExpireAt: string;
   };
 }

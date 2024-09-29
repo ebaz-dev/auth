@@ -8,6 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      SERVICE_NAME: auth
 
     steps:
       - name: Checkout code
@@ -17,9 +19,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "20"
-
-      - name: Install PM2 globally
-        run: npm install pm2 -g
 
       - name: Install dependencies
         run: npm ci
@@ -40,10 +39,10 @@ jobs:
         run: echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/auth:${{ github.sha }} ./service
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }} ./service
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/auth:${{ github.sha }}
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
 
       - name: Setup SSH Key
         run: |
@@ -67,9 +66,9 @@ jobs:
               git pull
             fi
             cd $INFRA_DIR
-            kubectl apply -f auth-depl.yaml
-            kubectl set image deployment/auth-depl auth=${{secrets.DOCKER_USERNAME}}/auth:${{ github.sha }}  # Update the deployment image
-            kubectl annotate deployment auth-depl kubernetes.io/change-cause="Updated image to $(date)" --overwrite  # Optional annotation
+            kubectl apply -f ${{ env.SERVICE_NAME }}-depl.yaml
+            kubectl set image deployment/${{ env.SERVICE_NAME }}-depl ${{ env.SERVICE_NAME }}=${{secrets.DOCKER_USERNAME}}/${{ env.SERVICE_NAME }}:${{ github.sha }}  # Update the deployment image
+            kubectl annotate deployment ${{ env.SERVICE_NAME }}-depl kubernetes.io/change-cause="Updated image to $(date)" --overwrite  # Optional annotation
             echo "Deployment completed."
           EOF
         env:

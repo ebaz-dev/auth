@@ -57,7 +57,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.K8S_USER_DEV }}@${{ secrets.K8S_HOST_DEV }} << 'EOF'
             set -e
             REPO_DIR="/home/admin/github/${{ github.repository }}"
-            INFRA_DIR="/home/admin/github/${{ github.repository }}/service/k8s"
+            INFRA_DIR="/home/admin/github/${{ github.repository }}/service/k8s/dev"
             if [ ! -d "$REPO_DIR" ]; then
               echo "Repository not found. Cloning..."
               git clone git@github.com:${{ github.repository }} $REPO_DIR

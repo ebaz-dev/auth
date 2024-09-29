@@ -25,6 +25,10 @@ spec:
               value: 'http://nats-srv:4222'
             - name: NATS_CLUSTER_ID
               value: 'ebazaar_dev'
+            - name: NATS_USER
+              value: 'nats_dev'
+            - name: NATS_PASS
+              value: 'NaTs@Dev$EBaz'
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:

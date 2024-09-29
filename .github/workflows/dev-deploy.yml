@@ -52,7 +52,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.K8S_HOST_DEV }} >> ~/.ssh/known_hosts
 
-      - name: Deploy and Reload PM2
+      - name: Deploy Docker Image
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.K8S_USER_DEV }}@${{ secrets.K8S_HOST_DEV }} << 'EOF'
             set -e

@@ -40,10 +40,10 @@ jobs:
         run: echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/auth:latest ./service
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/auth:${{ github.sha }} ./service
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/auth:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/auth:${{ github.sha }}
 
       - name: Setup SSH Key
         run: |
@@ -68,7 +68,8 @@ jobs:
             fi
             cd $INFRA_DIR
             kubectl apply -f auth-depl.yaml
-
+            kubectl set image deployment/auth-depl auth=${{secrets.DOCKER_USERNAME}}/auth:${{ github.sha }}  # Update the deployment image
+            kubectl annotate deployment auth-depl kubernetes.io/change-cause="Updated image to $(date)" --overwrite  # Optional annotation
             echo "Deployment completed."
           EOF
         env:

@@ -39,14 +39,14 @@ spec:
               value: 'development'
           readinessProbe:
             httpGet:
-              path: /health
+              path: /api/v1/health
               port: 3000
             initialDelaySeconds: 5
             periodSeconds: 5
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /health
+              path: /api/v1/health
               port: 3000
             initialDelaySeconds: 15
             periodSeconds: 20

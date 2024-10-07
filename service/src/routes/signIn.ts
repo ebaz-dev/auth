@@ -86,20 +86,29 @@ router.post(
       throw new BadRequestError("Invalid credentials");
     }
 
-    const device = new UserDevice({
-      userId: existingUser.id,
-      deviceName,
-      deviceType,
-      deviceToken,
-      isLogged: true,
-    });
+    let existingDevice = await UserDevice.findOne({ deviceToken });
 
-    await device.save();
+    if (!existingDevice) {
+      existingDevice = new UserDevice({
+        userId: existingUser.id,
+        deviceName,
+        deviceType,
+        deviceToken,
+        isLogged: true,
+      });
+    } else {
+      existingDevice.isLogged = true;
+    }
+    await existingDevice.save();
 
     const identifier = email || phoneNumber;
 
     const userJwt = jwt.sign(
-      { id: existingUser.id, identifier: identifier, deviceId: device.id },
+      {
+        id: existingUser.id,
+        identifier: identifier,
+        deviceId: existingDevice.id,
+      },
       process.env.JWT_KEY!
     );
 
